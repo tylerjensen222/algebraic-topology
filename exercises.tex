@@ -15,6 +15,8 @@
 \usepackage{tikz}
 \usepackage{tikz-cd}
 \usetikzlibrary{calc,3d}
+\usetikzlibrary{decorations.markings}
+\usepackage{animate}
 
 \usepackage{amsmath,amssymb,amsthm}
 \usepackage{mathtools}    % For extra math features (e.g., \DeclareMathOperator)
@@ -46,6 +48,15 @@
 \renewcommand{\Im}{\operatorname{Im}}
 \renewcommand{\Re}{\operatorname{Re}}
 \DeclareMathOperator{\Ker}{Ker}
+
+% Common Fields
+\newcommand{\R}{\mathbb{R}}        % Real numbers
+\newcommand{\C}{\mathbb{C}}        % Complex numbers
+\newcommand{\HH}{\mathbb{H}}        % Quarternions
+\newcommand{\Q}{\mathbb{Q}}        % Rational numbers
+\newcommand{\Z}{\mathbb{Z}}        % Integers
+\newcommand{\N}{\mathbb{N}}        % Natural numbers
+\newcommand{\K}{\mathbb{K}}        % Arbitrary field
 
 %------------------------------------------------------------------------------
 %   Define 'taggedexercise' environment
@@ -112,17 +123,95 @@
 \setcounter{chapter}{-1}
 
 %==============================================================================
-\chapter{Som Underlying Geometric Notions}
+\chapter{Some Underlying Geometric Notions}
 %==============================================================================
 
 
-% Example exercise
-\begin{taggedexercise}[\textcolor{red}{TODO}]
-  Show that ...
+% Exercise 0.1
+\begin{taggedexercise}[\textcolor{green}{Complete}]
+  Construct an explicit deformation retraction of the torus with one point deleted onto a graph of two circles intersecting at a point, namely, longitude and meridian circles of the torus.
 \end{taggedexercise}
-
 \begin{solution}
-  Here is the solution ...
+  Consider the fundamental square of the torus with a point removed:
+  \begin{center}
+    \begin{tikzpicture}[
+      scale=2,  % (1) Scale up
+      arrow inside/.style = {
+        postaction={decorate},
+        decoration={markings, mark=at position 0.5 with {\arrow{stealth}}}
+      }
+    ]
+    
+      %--- Draw the square with edges labeled a and b (with arrows in the middle)
+      \draw[arrow inside] (0,0) -- node [below] {$a$} (1,0);
+      \draw[arrow inside] (0,1) -- node [above] {$a$} (1,1);
+      \draw[arrow inside] (0,0) -- node [left]  {$b$} (0,1);
+      \draw[arrow inside] (1,0) -- node [right] {$b$} (1,1);
+    
+      %--- (2) Small circle in the center to mark the removed point
+      \draw (0.5,0.5) circle (0.03);
+    \end{tikzpicture}
+  \end{center}
+  where the deformation retract of the removed point retaracts to the boundary of the square; identifying the sides gives a bouquet of two circles:
+  \begin{center}
+    \begin{tikzpicture}[scale=2.0]
+
+      % We define a style "side arrow" that places
+      % a large arrow tip at a specified position around the circle.
+      % - 'mark=at position <number>' controls where along the path [0..1].
+      % - 'scale=1.8' (for example) enlarges the arrowhead.
+      \tikzset{
+        side arrow/.style={
+          postaction={decorate},
+          decoration={
+            markings,
+            mark=at position #1 with {\arrow[scale=1.8]{stealth}}
+          }
+        }
+      }
+    
+      % Circle 'a'
+      %  -- Center: (-0.5,0), Radius: 0.5
+      %  -- Place arrow at 0.25 (1/4 around the circle),
+      %     so the arrow is off to the side.
+      \draw[side arrow=0.25]
+           (-0.5,0) circle (0.5);
+      % Label 'a' near top
+      \node at (-0.5,0.3) {$a$};
+    
+      % Circle 'b'
+      %  -- Center: (0.5,0), Radius: 0.5
+      %  -- Put arrow at 0.75 to shift it to the opposite side
+      \draw[side arrow=0.75]
+           (0.5,0) circle (0.5);
+      % Label 'b' near top
+      \node at (0.5,-0.3) {$b$};
+    
+      % Wedge point
+      \fill (0,0) circle (0.02);
+    
+    \end{tikzpicture}
+  \end{center}
+  where the point at the intersection of the circles is the identification of the four corners.
+
+  Alternatively, let $p \in T$ be the removed point.
+  Choose your favorite open set $U$ about $p$.
+  Retract $U$ to the meridian, so that $T$ is now missing a longitudinal strip, contracted to  a line spanning the meridial width of $U$.
+  Then there are two open copies of $S^1$ seperated by this width; contract them along the meridian in the opposite direction of eachother.
+  Then, exactly two copies of $S^1$ are left, connected by a single point.
+\end{solution}
+
+\begin{taggedexercise}[\textcolor{red}{TODO}]
+  Construct an explicit deformation retract from $\R^n - \{0\}$ to $S^{n-1}$.
+\end{taggedexercise}
+\begin{solution}
+  Define a map 
+  \[h: \left(\R^n - \{0\}\right) \times I \to \R^n - \{0\}\]
+  via 
+  \[h(x, t):= (1-t)x + \frac{tx}{||x||}\]
+  where $||\cdot ||$ is the Euclidean norm in $\R^n$.
+  Then, $h(x, 0) = x$ and $h(1) = x/||x||$, retracting each point to a point on $S^{n-1}$.
+
 \end{solution}
 
 %==============================================================================

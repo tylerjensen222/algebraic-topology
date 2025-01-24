@@ -1,3 +1,4 @@
-\contentsline {chapter}{\numberline {0}Som Underlying Geometric Notions}{1}{}%
-\contentsline {subsection}{Exercise 0.1\ [\textcolor {red}{TODO}]}{1}{}%
+\contentsline {chapter}{\numberline {0}Some Underlying Geometric Notions}{1}{}%
+\contentsline {subsection}{Exercise 0.1\ [\textcolor {green}{Complete}]}{1}{}%
+\contentsline {subsection}{Exercise 0.2\ [\textcolor {red}{TODO}]}{1}{}%
 \contentsline {chapter}{\numberline {1}Fundamental Group}{3}{}%
