@@ -14,6 +14,7 @@
 
 \usepackage{tikz}
 \usepackage{tikz-cd}
+\usepackage{quiver}
 \usetikzlibrary{calc,3d}
 \usetikzlibrary{decorations.markings}
 \usepackage{animate}
@@ -25,6 +26,9 @@
 
 \usepackage{xparse}
 \usepackage{xcolor}
+
+\usepackage{dsfont}
+
 
 %------------------------------------------------------------------------------
 %   Custom Commands for Algebraic Topology
@@ -57,6 +61,14 @@
 \newcommand{\Z}{\mathbb{Z}}        % Integers
 \newcommand{\N}{\mathbb{N}}        % Natural numbers
 \newcommand{\K}{\mathbb{K}}        % Arbitrary field
+
+% Homotopic
+\newcommand{\heq}{\simeq}
+\newcommand{\id}{\mathds{1}}
+
+% Restriction
+\newcommand{\restr}[2]{\left.#1\right|_{#2}}
+
 
 %------------------------------------------------------------------------------
 %   Define 'taggedexercise' environment
@@ -96,6 +108,9 @@
 }
 {%
   \qed\par
+}
+{
+  \vspace{2pt}
 }
 
 %------------------------------------------------------------------------------
@@ -199,14 +214,16 @@
   Retract $U$ to the meridian, so that $T$ is now missing a longitudinal strip, contracted to  a line spanning the meridial width of $U$.
   Then there are two open copies of $S^1$ seperated by this width; contract them along the meridian in the opposite direction of eachother.
   Then, exactly two copies of $S^1$ are left, connected by a single point.
+
 \end{solution}
 
-\begin{taggedexercise}[\textcolor{red}{TODO}]
+% Exercise 0.2
+\begin{taggedexercise}[\textcolor{green}{Complete}]
   Construct an explicit deformation retract from $\R^n - \{0\}$ to $S^{n-1}$.
 \end{taggedexercise}
 \begin{solution}
   Define a map 
-  \[h: \left(\R^n - \{0\}\right) \times I \to \R^n - \{0\}\]
+  \[h: \left(\R^n - \{0\}\right) \times I \longrightarrow S^{n-1} \subset \R^n - \{0\}\]
   via 
   \[h(x, t):= (1-t)x + \frac{tx}{||x||}\]
   where $||\cdot ||$ is the Euclidean norm in $\R^n$.
@@ -214,11 +231,423 @@
 
 \end{solution}
 
+% Exercise 0.3
+\begin{taggedexercise}[\textcolor{green}{Complete}]
+  \begin{enumerate}
+    \item Show that the composition of homotopy equivalences $X \to Y$ and $Y \to Z$ is a homotopy equivalence $X \to Z$.
+          Deduce that homotopy equivalence is an equivalence relation.
+    \item Show that the relation of homotopy among maps $X \to Y$ is an equivalence relation.
+    \item Show that a map homotopic to a homotopy equivalence is an equivalence relation.
+  \end{enumerate}
+\end{taggedexercise}
+
+\begin{solution}
+  (1). Define homotopies $f : X \to Y$, $f' : Y \to X$, $g : Y \to Z$ and $g' : Z \to Y$ s.t.
+  \[f' \circ f \heq \id_X, f \circ f' \heq \id_Y\]
+  \[g' \circ g \heq \id_Y, g \circ g' \heq \id_Z.\]
+  Then,
+  \[
+  \begin{aligned}
+    (f' \circ g')\circ (g \circ f) &= f' \circ (g' \circ g) \circ f\\
+                                   &= f' \circ \id_Y \circ f \\
+                                   &= f' \circ f \\
+                                   &= \id_X
+  \end{aligned}
+  \]
+  and 
+  \[
+  \begin{aligned}
+    (g \circ f) \circ (f' \circ g') &= g \circ (f \circ f') \circ g' \\
+                                    &= g \circ \id_Y \circ g' \\
+                                    &= g \circ g' \\
+                                    &= \id_Z
+  \end{aligned}
+  \]
+  hence, the composition map induced by $X \to Y \to Z$ induces a homotopy equivalence $X \to Z$.
+  Or, in other words, the following diagram commutes:
+  \[\begin{tikzcd}
+	&&&& Y \\
+	\\
+	\\
+	X &&&&&&&& Z
+	\arrow["{\id_Y}", from=1-5, to=1-5, loop, in=55, out=125, distance=10mm]
+	\arrow["{f'}", curve={height=-12pt}, from=1-5, to=4-1]
+	\arrow["g", curve={height=-12pt}, from=1-5, to=4-9]
+	\arrow["f", curve={height=-12pt}, from=4-1, to=1-5]
+	\arrow["{\id_X}", from=4-1, to=4-1, loop, in=145, out=215, distance=10mm]
+	\arrow["{g \circ f}"', curve={height=-12pt}, from=4-1, to=4-9]
+	\arrow["{g'}"', curve={height=-12pt}, from=4-9, to=1-5]
+	\arrow["{f' \circ g'}", shift left=3, curve={height=-12pt}, from=4-9, to=4-1]
+	\arrow["{\id_Z}", from=4-9, to=4-9, loop, in=325, out=35, distance=10mm]
+\end{tikzcd}.\]
+  Thus, homotopy equivalence is transitive.
+
+  Next, let $h: X \to X$ be a homotopy s.t. $h_t = \id_X$ for all $t \in I$.
+  Then $X$ is certainly homotopy equivalent to itself, and so homotopy equivalence is reflexive. 
+
+  Lastly, let $k: X \to Y$ be a homotopy.
+  Then there exists some $k'$ s.t. $k' \circ k \heq \id_X$ and $k \circ k' \heq \id_Y$.
+  Thus, $k'$ induces a homotopy equivalence $Y \to X$, and so homotopy equivalence is symmetric. 
+  Therefore, homotopy equivalence is an equivalence relation. 
+
+  (2). Let $f_0,f_1,f_2: X \to Y$ be maps so that $f_0 \heq f_1$ and $f_1 \heq f_2$. 
+  Then there exist homotopies $F, G: X \times I \to Y$ s.t. 
+  \[F(x, 0) = f_0(x),\; F(x, 1) = f_1(x)\]
+  \[G(x, 0) = f_1(x),\; G(x, 1) = f_2(x).\]
+  Then, define a map $H: X \times I \to Y$ s.t.
+  \[
+    H(x,t) :=\;
+    \begin{cases}
+      F(x,2t),      & 0 \le t \le \tfrac{1}{2},\\[6pt]
+      G(x,2t - 1),  & \tfrac{1}{2} \le t \le 1.
+    \end{cases}
+  \]
+  Then certainly $H$ is a homotopy, so $f_0 \heq f_2$.
+  Therefore, homotopy relations of maps is transitive.
+
+  Next, let $f: X \to X$ be a map.
+  Then, consider the homotopy $F: X \times I \to X$ s.t. $F(x,t) = f(x)$ for all $t$.
+  Thus $f \heq f$, and so homotopy relations of maps is reflexive.
+
+  Lastly, let $f_0, f_1: X \to Y$ be homotopic.
+  Then there exists a homotopy $F: X \times I \to Y$ s.t. 
+  \[F(x, 0) = f_0(x),\; F(x, 1) = f_1(x).\]
+  Consider the map 
+  \[H(x, t) := F(x, 1 - t)\]
+  then,
+  \[H(x, 0) = f_1(x),\; H(x, 1) = f_0(x)\]
+  and so $H$ is a homotopy from $f_1$ to $f_0$, hence $f_0 \heq f_1 \iff f_1 \heq f_0$.
+  Therefore, homotopy relations of maps is symmetric, and homotopy relations of maps is an equivalence relation.
+
+  (3). Let $X \to Y$ be a homotopy equivalence. 
+  Then there exist maps $f: X \to Y$ and $g: Y \to X$ s.t. $f \circ g \heq \id_Y$ and $g \circ f \heq id_X$.
+  Let $h \heq g \circ f$ be a map homotopic to the homotopy equivalence. 
+  Then by (1) and (2), $h$ is an equivalence relation.
+
+\end{solution}
+
+% Exercise 0.4
+\begin{taggedexercise}[\textcolor{yellow}{WIP}]
+  A \textbf{deformation retraction in the weak sense} of a space $X$ to a subspace $A$ is a homotopy 
+  $f_t: X \to X$ such that $f_0 \heq \id_X$, $f_1(X) \subset A$, and $f_t(A) \subset A$ for all $t$.
+  Show that if $X$ deformation retracts to $A$ in this weak sense, then the inclusion $A \hookrightarrow X$
+  is a homotopy equivalence.
+\end{taggedexercise}
+
+\begin{solution}
+  Let $i: A \hookrightarrow X$ be such an inclusion.
+  % Define a a map $F: X \times I \to X$ via $F(x, t) := f_t(x)$, then 
+  % \[F(x, 0 ) = f_0 \heq \id_X, \;\; F(x, 1) = r(x)\]
+  Then, note that  
+  \[(f_t \circ i)_{t=0} = \restr{f_0}{A} \heq \restr{\id_X}{A} = \id_A\]
+  Next, let $f_1 = r$ be the resulting deformation retract in the weak sense, so that $r(X) \subset A$.
+  Then, 
+  \[(i \circ f_t)_{t=1} = i \circ r = \restr{i}{r(X)} = \id_{r(X)}\]
+  where the final equality holds given $r(X) \subset A$.
+  Finally, its clear that $A$ must deformation retract to $r(X)$.
+  Hence, $i$ is a homotopy equivalence.
+\end{solution}
+
+% Exercise 0.5
+\begin{taggedexercise}[\textcolor{red}{TODO}]
+  
+\end{taggedexercise}
+
+% Exercise 0.6
+\begin{taggedexercise}[\textcolor{red}{TODO}]
+  
+\end{taggedexercise}
+
+% Exercise 0.7
+\begin{taggedexercise}[\textcolor{red}{TODO}]
+  
+\end{taggedexercise}
+
+% Exercise 0.8
+\begin{taggedexercise}[\textcolor{red}{TODO}]
+  
+\end{taggedexercise}
+
+% Exercise 0.9
+\begin{taggedexercise}[\textcolor{red}{TODO}]
+  
+\end{taggedexercise}
+
+% Exercise 0.10
+\begin{taggedexercise}[\textcolor{red}{TODO}]
+  
+\end{taggedexercise}
+
+% Exercise 0.11
+\begin{taggedexercise}[\textcolor{yellow}{WIP}]
+  Show that $f: X \to Y$ is a hopomotopy equivalence if there exist maps $g,h: Y \to X$ such that $f \circ g \heq \id_Y$ 
+  and $h \circ f \heq \id_X$.
+  More generally, show that $f$ is a homotopy equivalence if $f \circ g$ and $h \circ f$ are homotopy equivalences.
+\end{taggedexercise}
+
+\begin{solution}
+  Note that 
+  \[g \heq (h \circ f) \circ g = h \circ (f \circ g) \heq h.\]
+  Therefore, both $h$ and $g$ serve as a two-sided homotopic inverse of $f$, as in 
+  \[g\circ f \heq \id_X, \;\; f\circ g \heq \id_Y\]
+  \[h\circ f \heq \id_X, \;\; f\circ h \heq \id_Y\]
+  Choosing either shows that $f$ is a homotopy equivalence.
+  More generally, let $f \circ g$ and $h \circ f$ be homotopy equivalences.
+  Then there exist maps $u: X \to X$ and $v: Y\to Y$ s.t. 
+  \[(h \circ f) \circ u \heq u \circ (h \circ f) \heq \id_X\]
+  \[(f \circ g) \circ v \heq v \circ (f \circ g) \heq \id_Y\]
+  Then,
+  \[g \circ u \circ h \circ f\]
+\end{solution}
+
+% Exercise 0.12
+\begin{taggedexercise}[\textcolor{red}{TODO}]
+  
+\end{taggedexercise}
+
 %==============================================================================
-\chapter{Fundamental Group}
+\chapter{The Fundamental Group}
 %==============================================================================
 
-... content ...
+% Exercise 1.1
+\begin{taggedexercise}[\textcolor{green}{Complete}]
+  Show that composition of paths satisfies the following cancellation property:
+  if $f_0 \cdot g_0 \heq f_1 \cdot g_1$ and $g_0 \heq g_1$, then $f_0 \heq f_1$.
+\end{taggedexercise}
+\begin{solution}
+  Consider two homotopies $H_1, H_2 : I \times I \to X$ s.t. 
+  \[H_1(s, 0) = (f_0 \cdot g_0)(s), \;\;\; H_1(s, 1) = (f_1 \cdot g_1)(s)\]
+  \[H_2(s, 0) = g_0(s), \;\;\; H_2(s, 1) = g_1(s).\]
+  Then, consider 
+  \[H^{*}_2(s,t) = f_0 \cdot H_2(s,t)\]
+  which is clearly also a homotopy given by
+  \[H^*_2(s, 0 ) = f_0 \cdot g_0, \;\;\; H^*_2(s, 1) = f_0 \cdot g_1.\]
+  Therefore, by transitivity, $f_1 \cdot g_1 \heq f_0 \cdot g_1$, where cancelling $g_1$ on the right gives $f_0 \heq f_1$.
+
+\end{solution}
+
+% Exercise 1.2
+\begin{taggedexercise}[\textcolor{green}{Complete}]
+  Show that the change-of-basepoint homomoprhism $\beta_h$ depends only on the homotopy class of $h$.
+\end{taggedexercise}
+\begin{solution}
+
+  Let $h_1, h_2 \in [h]$ with $h_1(0) = h_2(0)=x_1$ and $h_1(1) = h_2(1) = x_0$.
+  Then consider the maps
+  \[\beta_{h_1}, \beta_{h_2} : \pi_1(X, x_1) \to \pi_1(X, x_0).\]
+  We want to show that for any $[f] \in \pi_1(X, x_1)$, we have that
+  \[\beta_{h_1}([f]) = [h_1 \cdot f \cdot \overline{h_1}] = [h_2 \cdot f \cdot \overline{h_2}] = \beta_{h_2}([f]).\]
+  This is equivalent to showing that $h_1 \cdot f \cdot \overline{h_1} \heq h_2 \cdot f \cdot \overline{h_2}$ for any $f \in [f]$.
+  Since $\overline{h_1} \heq \overline{h_2}$ and $h_1 \heq h_2$, this follows immediately from \textbf{Exercise 1.1}
+  (while additionally using a similar argument for $g_0 \cdot f_0 \heq g_1 \cdot f_1$, $g_0 \heq g_1 \implies f_0 \heq f_1$), 
+  hence the result.
+
+\end{solution}
+
+% Exercise 1.3
+\begin{taggedexercise}[\textcolor{green}{Complete}]
+  For a path-connected space $X$, show that $\pi_1(X)$ is abelian if and only if all change-of-basepoint homomorphisms $\beta_h$
+  depend only on the endpoints of $h$.
+\end{taggedexercise}
+
+\begin{solution}
+
+  ($\impliedby$) Assume $\pi_1(X)$ is not abelian.
+  Then, there exist $[f], [g] \in \pi_1(X)$ with $[g] \cdot [f] \cdot [g]^{-1} \neq [f]$, and thus
+  \[
+  \beta_g([f]) = [g\cdot f \cdot \bar{g}] = [g] \cdot [f] \cdot [g]^{-1} \neq [f]
+  \]
+  where the second equality holds due to \textbf{Exercise 1.2}.
+  Let $\{x_0\}$ be the constant loop, then
+  \[
+    \beta_{\{x_0\}}([f]) = [\{x_0\}] \cdot [f] \cdot [\{x_0\}] = [f]
+  \]
+  and so $\beta_g \neq \beta_{\{x_0\}}$, a contradiciton.
+
+
+  ($\implies$) Let $\pi_1(X)$ be abelian.
+  Let $h_1, h_2 \in [h]$. 
+  Then,
+  \[\beta_{h_1}([f]) = [h_1 \cdot f \cdot \bar{h_1}] = [h_1 \cdot f \cdot \bar{h_2}] \cdot [h_2 \cdot \bar{h_1}]\]
+  where the last equality holds since $[h_2 \cdot \bar{h}]$ is trivial as they are in the same homotopy class.
+  Since $\pi_1(X)$ is abelian, we get that 
+  \[\beta_{h_1}([f]) = [h_1 \cdot f \cdot \bar{h_2}] \cdot [h_2 \cdot \bar{h_1}] = [h_2 \cdot \bar{h_1}] \cdot[h_1 \cdot f \cdot \bar{h_2}] = [h_2 \cdot f \cdot \bar{h_2}] = \beta_{h_2}([f])\]
+  hence the result.
+
+\end{solution}
+
+% Exercise 1.4
+\begin{taggedexercise}[\textcolor{red}{TODO}]
+  
+\end{taggedexercise}
+
+% Exercise 1.5
+\begin{taggedexercise}[\textcolor{green}{Complete}]
+  Show the following are equivalent:
+  \begin{enumerate}
+    \item Every map $S^1 \to X$ is homotopic to a constant map, with image a point.
+    \item Every map $S^1 \to X$ extends to a map $D^2 \to X$.
+    \item $\pi_1(X, x_0) = 0$ for all $x_0\in X$.
+  \end{enumerate}
+  Deduce that a space is simply-connected iff all maps $S^1 \to X$ are homotopic.
+\end{taggedexercise}
+
+\begin{solution}
+
+  (1 $\implies$ 2). Let $f: S^1 \to X$.
+  Let $H : S^1 \times I \to X$ be a homotopy from (1) s.t.
+  \[H(x, 0) = f(x), \;\; H(s, 1) = \{x_0\}\]
+  with the restraint that $H(s, t) \subset f(S^1)$ for all $t > 0$.
+  Embed $S^1 \times I$ into $D^2$ as an annulus with center $c$; extend $H$ over all of $D^2$ by mapping it to $c$.
+
+  (2 $\implies$ 3). Think of $\pi_1(X, x_0)$ as basepoint-preserving homotopy classes of maps $f: (S^1, s_0) \to (X, x_0)$.
+  By hypothesis $f$ extends to a map $\tilde{f}: (D^2, s_0) \to X$, and so there is a deformation retraction $r$ of $D^2$ onto $s_0$.
+  Let $H: S^1 \to X$ be a homotopy s.t. 
+  \[H(s, t) := f\circ r_t(s)\]
+  which preserves the basepoint $s_0$, and is a homotopy of $f$ to $\{f(s_0)\} = \{x_0\}$, hence the result.
+
+  (3 $\implies$ 1). Again, think of $\pi_1(X, x_0)$ as basepoint-preserving homotopy classes of maps $f: (S^1, s_0) \to (X, x_0)$.
+  By hypothesis, there must exist a homotopy taking $f$ to $\{f(s_0)\} = \{x_0\}$, hence the result.
+
+  If all maps $S^1 \to X$ are homotopic, then $\pi_1(X, x_0)$ has exactly one element, which must be the identity, and 
+  so $X$ must be simply-connected. 
+  Conversely, if $X$ is simply-connected, then by the above, all maps $S^1 \to X$ are homotopic to a constant map 
+  at some basepoint.
+
+\end{solution}
+
+
+% Exercise 1.6
+\begin{taggedexercise}[\textcolor{red}{TODO}]
+
+  We can regard $\pi_1(X, x_0)$ as all basepoint-preserving homotopy classes of maps $(S^1, s_0) \to (X, x_0)$.
+  Let $[S^1, X]$ be the set of homotopy classes of maps $S^1 \to X$, with no condition on basepoints.
+  Thus there is a natural map $\Phi : \pi_1(X, x_0) \to [S^1, X]$ obtained by ignoring basepoints.
+  Show that $\Phi$ is onto if $X$ is path-connected, and that $\Phi([f]) = \Phi([g])$ if and only if 
+  $[f]$ and $[g]$ are conjugate in $\pi_1(X, x_0)$.
+  Hence $\Phi$ is a one-to-one correspondence between $[S^1, X]$ and $\pi_1(X)$ if $X$ is path-connected.  
+
+\end{taggedexercise}
+
+\begin{solution}
+  
+  \textit{Surjectivity}. Let $[h] \in [S^1, X]$ be a homotopy class of maps $S^1 \to X$. 
+  Since $X$ is path-connected, certainly there is some $h \in [h]$ with $h(t) = x_0$ for some $t \in I$.
+  Reperamaterize so that $h(0) = h(1) = x_0$.
+  Then there must be some $f \in [f] \in \pi_1(X, x_0)$ s.t. $h$ is homotopic to $f$, hence $\Phi([f]) = [h]$, and so
+  $\Phi$ is onto.
+
+  \textit{Injectivity}. ($\impliedby$) Let $[f]$ and $[g]$ be conjugate in $\pi_1(X, x_0)$.
+  Then there exists a homotopy $H$ mapping $f \to g$ for any $f \in [f]$ and $g \in [g]$.
+
+
+\end{solution}
+
+% Exercise 1.7
+\begin{taggedexercise}[\textcolor{red}{TODO}]
+  
+\end{taggedexercise}
+
+% Exercise 1.8
+\begin{taggedexercise}[\textcolor{red}{TODO}]
+  
+\end{taggedexercise}
+
+% Exercise 1.9
+\begin{taggedexercise}[\textcolor{red}{TODO}]
+  
+\end{taggedexercise}
+
+% Exercise 1.10
+\begin{taggedexercise}[\textcolor{red}{TODO}]
+  
+\end{taggedexercise}
+
+% Exercise 1.11
+\begin{taggedexercise}[\textcolor{red}{TODO}]
+  
+\end{taggedexercise}
+
+% Exercise 1.12
+\begin{taggedexercise}[\textcolor{red}{TODO}]
+  
+\end{taggedexercise}
+
+% Exercise 1.13
+\begin{taggedexercise}[\textcolor{red}{TODO}]
+  
+\end{taggedexercise}
+
+% Exercise 1.14
+\begin{taggedexercise}[\textcolor{red}{TODO}]
+  
+\end{taggedexercise}
+
+% Exercise 1.15
+\begin{taggedexercise}[\textcolor{red}{TODO}]
+  
+\end{taggedexercise}
+
+% Exercise 1.16
+\begin{taggedexercise}[\textcolor{red}{TODO}]
+
+  Show that there are no retractions $r : X \to A$ in the following cases: 
+  \begin{enumerate}
+    \item $X = \R^3$ and $A$ any subspace homeomorphic to $S^1$.
+    \item $X = S^1 \times D^2$ and $A$ its boundary torus $S^1 \times S^1$.
+    \item $X = S^1 \times D^2$ and $A$ the circle shown in the figure.
+    \item 
+  \end{enumerate}
+
+\end{taggedexercise}
+\begin{solution}
+  
+  (1). The fundamental group of the subspace of a retraction is a subgroup of the space. 
+  $\pi_1(\R^3)$ is trivial, and $\pi_1(S^1) = \Z$, and so no retraction can exist as obviously 
+  $\Z$ is not a subgroup of the trivial group.
+
+  (2) The fundamental group of the subspace of a retraction is a subgroup of the space. 
+  $\pi_1(S^1 \times D^2) = \Z$ as $S^1 \times D^2$ deformation retracts to $S^1$, whereas $\pi_1(S^1 \times S^1) = \Z \times \Z$.
+  $\Z \times \Z$ cannot be a subgroup of $\Z$, hence the result.  
+
+  (3) 
+
+\end{solution}
+
+% Exercise 1.17
+\begin{taggedexercise}[\textcolor{red}{TODO}]
+  
+\end{taggedexercise}
+
+% Exercise 1.18
+\begin{taggedexercise}[\textcolor{red}{TODO}]
+  
+\end{taggedexercise}
+
+% Exercise 1.19
+\begin{taggedexercise}[\textcolor{red}{TODO}]
+  
+\end{taggedexercise}
+
+% Exercise 1.20
+\begin{taggedexercise}[\textcolor{red}{TODO}]
+  
+\end{taggedexercise}
+
+% Exercise 1.21
+\begin{taggedexercise}[\textcolor{red}{TODO}]
+  
+\end{taggedexercise}
+
+% Exercise 1.22
+\begin{taggedexercise}[\textcolor{red}{TODO}]
+  
+\end{taggedexercise}
+
+% Exercise 1.23
+\begin{taggedexercise}[\textcolor{red}{TODO}]
+  
+\end{taggedexercise}
 
 \end{document}
 
